@@ -1,4 +1,5 @@
-Freescale MMA8451Q, MMA8452Q or MMA8453Q triaxial accelerometer
+Freescale MMA8451Q, MMA8452Q, MMA8453Q or FXLS8471Q
+triaxial accelerometer
 
 Required properties:
 
@@ -6,6 +7,8 @@ Required properties:
     * "fsl,mma8451"
     * "fsl,mma8452"
     * "fsl,mma8453"
+    * "fsl,fxls8471"
+
   - reg: the I2C address of the chip
 
 Optional properties:

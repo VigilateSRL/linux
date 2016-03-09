@@ -4,6 +4,7 @@
  * MMA8451Q (14 bit)
  * MMA8452Q (12 bit)
  * MMA8453Q (10 bit)
+ * FXLS8471Q (14 bit)
  *
  * Copyright 2014 Peter Meerwald <pmeerw@pmeerw.net>
  *
@@ -71,9 +72,10 @@
 #define  MMA8452_INT_DRDY			BIT(0)
 #define  MMA8452_INT_TRANS			BIT(5)
 
-#define  MMA8451_DEVICE_ID			0x1a
-#define  MMA8452_DEVICE_ID			0x2a
-#define  MMA8453_DEVICE_ID			0x3a
+#define MMA8451_DEVICE_ID			0x1a
+#define MMA8452_DEVICE_ID			0x2a
+#define MMA8453_DEVICE_ID			0x3a
+#define FXLS8471_DEVICE_ID			0x6a
 
 struct mma8452_data {
 	struct i2c_client *client;
@@ -584,6 +586,7 @@ enum {
 	mma8451,
 	mma8452,
 	mma8453,
+	fxls8471,
 };
 
 static const struct mma_chip_info mma_chip_info_table[] = {
@@ -632,6 +635,22 @@ static const struct mma_chip_info mma_chip_info_table[] = {
 		.channels = mma8453_channels,
 		.num_channels = ARRAY_SIZE(mma8453_channels),
 		.mma_scales = { {0, 38307}, {0, 76614}, {0, 153228} },
+		.ev_cfg = MMA8452_TRANSIENT_CFG,
+		.ev_cfg_ele = MMA8452_TRANSIENT_CFG_ELE,
+		.ev_cfg_chan_shift = 1,
+		.ev_src = MMA8452_TRANSIENT_SRC,
+		.ev_src_xe = MMA8452_TRANSIENT_SRC_XTRANSE,
+		.ev_src_ye = MMA8452_TRANSIENT_SRC_YTRANSE,
+		.ev_src_ze = MMA8452_TRANSIENT_SRC_ZTRANSE,
+		.ev_ths = MMA8452_TRANSIENT_THS,
+		.ev_ths_mask = MMA8452_TRANSIENT_THS_MASK,
+		.ev_count = MMA8452_TRANSIENT_COUNT,
+	},
+	[fxls8471] = {
+		.chip_id = FXLS8471_DEVICE_ID,
+		.channels = mma8451_channels,
+		.num_channels = ARRAY_SIZE(mma8451_channels),
+		.mma_scales = { {0, 2394}, {0, 4788}, {0, 9577} },
 		.ev_cfg = MMA8452_TRANSIENT_CFG,
 		.ev_cfg_ele = MMA8452_TRANSIENT_CFG_ELE,
 		.ev_cfg_chan_shift = 1,
@@ -698,6 +717,7 @@ static const struct of_device_id mma8452_dt_ids[] = {
 	{ .compatible = "fsl,mma8451", .data = &mma_chip_info_table[mma8451] },
 	{ .compatible = "fsl,mma8452", .data = &mma_chip_info_table[mma8452] },
 	{ .compatible = "fsl,mma8453", .data = &mma_chip_info_table[mma8453] },
+	{ .compatible = "fsl,fxls8471", .data = &mma_chip_info_table[fxls8471] },
 	{ }
 };
 MODULE_DEVICE_TABLE(of, mma8452_dt_ids);
@@ -714,7 +734,8 @@ static int mma8452_probe(struct i2c_client *client,
 	if (ret < 0)
 		return ret;
 
-	if (ret != MMA8452_DEVICE_ID && ret != MMA8453_DEVICE_ID)
+	if (ret != MMA8452_DEVICE_ID && ret != MMA8453_DEVICE_ID &&
+	    ret != FXLS8471_DEVICE_ID)
 		return -ENODEV;
 
 	match = of_match_device(mma8452_dt_ids, &client->dev);
@@ -740,6 +761,7 @@ static int mma8452_probe(struct i2c_client *client,
 	case MMA8451_DEVICE_ID:
 	case MMA8452_DEVICE_ID:
 	case MMA8453_DEVICE_ID:
+	case FXLS8471_DEVICE_ID:
 		if (ret == data->chip_info->chip_id)
 			break;
 	default:
@@ -866,6 +888,7 @@ static SIMPLE_DEV_PM_OPS(mma8452_pm_ops, mma8452_suspend, mma8452_resume);
 static const struct i2c_device_id mma8452_id[] = {
 	{ "mma8452", mma8452 },
 	{ "mma8453", mma8453 },
+	{ "fxls8471", fxls8471 },
 	{ }
 };
 MODULE_DEVICE_TABLE(i2c, mma8452_id);
