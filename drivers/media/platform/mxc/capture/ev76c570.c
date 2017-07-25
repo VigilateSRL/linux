@@ -2,7 +2,8 @@
  * Copyright (C) 2017 Vigilate
  * Author: Davide Ciminaghi <ciminaghi@gnudd.com>
  *
- * Driver for ev76c570 parallel sensor (mxc platform)
+ * Driver for ev76c570 parallel sensor (mxc platform). Some code comes from
+ * the ov5640 driver in this directory.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +28,7 @@
 #include <linux/spi/spi.h>
 #include <linux/module.h>
 #include <linux/regmap.h>
+#include "v4l2-int-device.h"
 
 /* Registers defines */
 #define EV76C570_REG0 0
@@ -40,6 +42,8 @@ struct ev76c570_priv {
 	struct regmap *map8;
 	struct regmap *map16;
 	int reset_gpio;
+	struct spi_device *spi;
+	struct v4l2_int_device *vd;
 };
 
 struct ev76c570_platform_data {
@@ -90,11 +94,6 @@ static const struct regmap_config ev76c570_regmap_config16 = {
 	.volatile_reg = ev76c570_is_volatile_reg,
 };
 
-static int ev76c570_remove(struct spi_device *spi)
-{
-	return 0;
-}
-
 static struct ev76c570_platform_data *setup_platdata(struct spi_device *spi)
 {
 	struct device_node *n = spi->dev.of_node;
@@ -141,11 +140,314 @@ static int ev76c570_reset(struct spi_device *spi)
 	return 0;
 }
 
+/*
+ * ioctl_dev_init - V4L2 sensor interface handler for vidioc_int_dev_init_num
+ * @s: pointer to standard V4L2 device structure
+ *
+ * Initialise the device when slave attaches to the master.
+ */
+static int ioctl_dev_init(struct v4l2_int_device *s)
+{
+	struct ev76c570_priv *data = s->priv;
+
+	dev_dbg(&data->spi->dev, "%s", __func__);
+	return 0;
+}
+
+/*
+ * ioctl_dev_exit - V4L2 sensor interface handler for vidioc_int_dev_exit_num
+ * @s: pointer to standard V4L2 device structure
+ *
+ * Delinitialise the device when slave detaches to the master.
+ */
+static int ioctl_dev_exit(struct v4l2_int_device *s)
+{
+	struct ev76c570_priv *data = s->priv;
+
+	dev_dbg(&data->spi->dev, "%s", __func__);
+	return 0;
+}
+
+/*
+ * ioctl_s_power - V4L2 sensor interface handler for VIDIOC_S_POWER ioctl
+ * @s: pointer to standard V4L2 device structure
+ * @on: indicates power mode (on or off)
+ *
+ * Turns the power on or off, depending on the value of on and returns the
+ * appropriate error code.
+ */
+static int ioctl_s_power(struct v4l2_int_device *s, int on)
+{
+	struct ev76c570_priv *data = s->priv;
+
+	dev_dbg(&data->spi->dev, "%s (%d)", __func__, on);
+	return 0;
+}
+
+static int ioctl_g_ifparm(struct v4l2_int_device *s, struct v4l2_ifparm *p)
+{
+	struct ev76c570_priv *data;
+	if (s == NULL) {
+		pr_err("   ERROR!! no slave device set!\n");
+		return -1;
+	}
+
+	data = s->priv;
+	memset(p, 0, sizeof(*p));
+	p->if_type = V4L2_IF_TYPE_BT656;
+	p->u.bt656.mode = V4L2_IF_TYPE_BT656_MODE_NOBT_10BIT;
+	/* everything else is 0. Is this OK ? */
+	return 0;
+}
+
+/*
+ * ioctl_init - V4L2 sensor interface handler for VIDIOC_INT_INIT
+ * @s: pointer to standard V4L2 device structure
+ */
+static int ioctl_init(struct v4l2_int_device *s)
+{
+	struct ev76c570_priv *data = s->priv;
+
+	dev_dbg(&data->spi->dev, "%s\n", __func__);
+	return 0;
+}
+
+/*
+ * ioctl_enum_fmt_cap - V4L2 sensor interface handler for VIDIOC_ENUM_FMT
+ * @s: pointer to standard V4L2 device structure
+ * @fmt: pointer to standard V4L2 fmt description structure
+ *
+ * Return 0.
+ */
+static int ioctl_enum_fmt_cap(struct v4l2_int_device *s,
+			      struct v4l2_fmtdesc *fmt)
+{
+	if (fmt->index > 0)
+		return -EINVAL;
+	/* Monochrome only supported at the moment */
+	fmt->pixelformat = V4L2_PIX_FMT_GREY;
+	return 0;
+}
+
+/*
+ * ioctl_g_fmt_cap - V4L2 sensor interface handler for ioctl_g_fmt_cap
+ * @s: pointer to standard V4L2 device structure
+ * @f: pointer to standard V4L2 v4l2_format structure
+ *
+ * Returns the sensor's current pixel format in the v4l2_format
+ * parameter.
+ */
+static int ioctl_g_fmt_cap(struct v4l2_int_device *s, struct v4l2_format *f)
+{
+	struct ev76c570_priv *data = s->priv;
+
+	dev_dbg(&data->spi->dev, "%s (format type = %d)\n", __func__, f->type);
+	f->fmt.pix.width = 1600;
+	f->fmt.pix.height = 1200;
+	f->fmt.pix.pixelformat = V4L2_PIX_FMT_GREY;
+	return 0;
+}
+
+/*
+ * ioctl_g_parm - V4L2 sensor interface handler for VIDIOC_G_PARM ioctl
+ * @s: pointer to standard V4L2 device structure
+ * @a: pointer to standard V4L2 VIDIOC_G_PARM ioctl structure
+ *
+ * Returns the sensor's video CAPTURE parameters.
+ */
+static int ioctl_g_parm(struct v4l2_int_device *s, struct v4l2_streamparm *a)
+{
+	struct ev76c570_priv *data = s->priv;
+	struct v4l2_captureparm *cparm = &a->parm.capture;
+
+	dev_dbg(&data->spi->dev, "%s", __func__);
+	switch (a->type) {
+		/* These are all the possible cases. */
+	case V4L2_BUF_TYPE_VIDEO_CAPTURE:
+		dev_dbg(&data->spi->dev,
+			"%s, type is V4L2_BUF_TYPE_VIDEO_CAPTURE\n", __func__);
+		memset(a, 0, sizeof(*a));
+		a->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+		cparm->capability = V4L2_MODE_HIGHQUALITY |
+			V4L2_CAP_TIMEPERFRAME;
+		cparm->timeperframe.numerator = 50;
+		cparm->timeperframe.denominator = 1;
+		/* FIXME ?? */
+		cparm->capturemode = 0;
+		break;
+
+	case V4L2_BUF_TYPE_VIDEO_OUTPUT:
+	case V4L2_BUF_TYPE_VIDEO_OVERLAY:
+	case V4L2_BUF_TYPE_VBI_CAPTURE:
+	case V4L2_BUF_TYPE_VBI_OUTPUT:
+	case V4L2_BUF_TYPE_SLICED_VBI_CAPTURE:
+	case V4L2_BUF_TYPE_SLICED_VBI_OUTPUT:
+		break;
+
+	default:
+		pr_debug("ioctl_g_parm:type is unknown %d\n", a->type);
+		break;
+	}
+	return 0;
+}
+
+/*
+ * ioctl_s_parm - V4L2 sensor interface handler for VIDIOC_S_PARM ioctl
+ * @s: pointer to standard V4L2 device structure
+ * @a: pointer to standard V4L2 VIDIOC_S_PARM ioctl structure
+ *
+ * Configures the sensor to use the input parameters, if possible.  If
+ * not possible, reverts to the old parameters and returns the
+ * appropriate error code.
+ */
+static int ioctl_s_parm(struct v4l2_int_device *s, struct v4l2_streamparm *a)
+{
+	struct ev76c570_priv *data = s->priv;
+
+	dev_dbg(&data->spi->dev, "%s\n", __func__);
+	/* Currently unsupported */
+	return -EINVAL;
+}
+
+/*
+ * ioctl_g_ctrl - V4L2 sensor interface handler for VIDIOC_G_CTRL ioctl
+ * @s: pointer to standard V4L2 device structure
+ * @vc: standard V4L2 VIDIOC_G_CTRL ioctl structure
+ *
+ * If the requested control is supported, returns the control's current
+ * value from the video_control[] array.  Otherwise, returns -EINVAL
+ * if the control is not supported.
+ */
+static int ioctl_g_ctrl(struct v4l2_int_device *s, struct v4l2_control *vc)
+{
+	/* Currently unsupported */
+	return -EPERM;
+}
+
+/*
+ * ioctl_s_ctrl - V4L2 sensor interface handler for VIDIOC_S_CTRL ioctl
+ * @s: pointer to standard V4L2 device structure
+ * @vc: standard V4L2 VIDIOC_S_CTRL ioctl structure
+ *
+ * If the requested control is supported, sets the control's current
+ * value in HW (and updates the video_control[] array).  Otherwise,
+ * returns -EINVAL if the control is not supported.
+ */
+static int ioctl_s_ctrl(struct v4l2_int_device *s, struct v4l2_control *vc)
+{
+	return -EPERM;
+}
+
+/*
+ * ioctl_enum_framesizes - V4L2 sensor interface handler for
+ *			   VIDIOC_ENUM_FRAMESIZES ioctl
+ * @s: pointer to standard V4L2 device structure
+ * @fsize: standard V4L2 VIDIOC_ENUM_FRAMESIZES ioctl structure
+ *
+ * Return 0 if successful, otherwise -EINVAL.
+ */
+static int ioctl_enum_framesizes(struct v4l2_int_device *s,
+				 struct v4l2_frmsizeenum *fsize)
+{
+	return -EINVAL;
+}
+
+/*
+ * ioctl_enum_frameintervals - V4L2 sensor interface handler for
+ *			       VIDIOC_ENUM_FRAMEINTERVALS ioctl
+ * @s: pointer to standard V4L2 device structure
+ * @fival: standard V4L2 VIDIOC_ENUM_FRAMEINTERVALS ioctl structure
+ *
+ * Return 0 if successful, otherwise -EINVAL.
+ */
+static int ioctl_enum_frameintervals(struct v4l2_int_device *s,
+					 struct v4l2_frmivalenum *fival)
+{
+	/* Currently unsupported */
+	return -EINVAL;
+}
+
+/*!
+ * ioctl_g_chip_ident - V4L2 sensor interface handler for
+ *			VIDIOC_DBG_G_CHIP_IDENT ioctl
+ * @s: pointer to standard V4L2 device structure
+ * @id: pointer to int
+ *
+ * Return 0.
+ */
+static int ioctl_g_chip_ident(struct v4l2_int_device *s, int *id)
+{
+	((struct v4l2_dbg_chip_ident *)id)->match.type =
+					V4L2_CHIP_MATCH_I2C_DRIVER;
+	strcpy(((struct v4l2_dbg_chip_ident *)id)->match.name,
+	       "ev76c570_sensor");
+
+	return 0;
+}
+
+/*
+ * v4l2 ioctls
+ */
+static struct v4l2_int_ioctl_desc ev76c570_ioctl_desc[] = {
+	{ vidioc_int_dev_init_num,
+	  (v4l2_int_ioctl_func *)ioctl_dev_init },
+	{ vidioc_int_dev_exit_num,
+	  ioctl_dev_exit},
+	{ vidioc_int_s_power_num,
+	  (v4l2_int_ioctl_func *)ioctl_s_power },
+	{ vidioc_int_g_ifparm_num,
+	  (v4l2_int_ioctl_func *)ioctl_g_ifparm },
+	{ vidioc_int_init_num,
+	  (v4l2_int_ioctl_func *)ioctl_init },
+	{ vidioc_int_enum_fmt_cap_num,
+	  (v4l2_int_ioctl_func *)ioctl_enum_fmt_cap },
+	{ vidioc_int_g_fmt_cap_num,
+	  (v4l2_int_ioctl_func *)ioctl_g_fmt_cap },
+	{ vidioc_int_g_parm_num,
+	  (v4l2_int_ioctl_func *)ioctl_g_parm },
+	{ vidioc_int_s_parm_num,
+	  (v4l2_int_ioctl_func *)ioctl_s_parm },
+	{ vidioc_int_g_ctrl_num,
+	  (v4l2_int_ioctl_func *)ioctl_g_ctrl },
+	{ vidioc_int_s_ctrl_num,
+	  (v4l2_int_ioctl_func *)ioctl_s_ctrl },
+	{ vidioc_int_enum_framesizes_num,
+	  (v4l2_int_ioctl_func *)ioctl_enum_framesizes },
+	{ vidioc_int_enum_frameintervals_num,
+	  (v4l2_int_ioctl_func *)ioctl_enum_frameintervals },
+	{ vidioc_int_g_chip_ident_num,
+	  (v4l2_int_ioctl_func *)ioctl_g_chip_ident },
+};
+
+static struct v4l2_int_slave ev76c570_slave = {
+	.ioctls = ev76c570_ioctl_desc,
+	.num_ioctls = ARRAY_SIZE(ev76c570_ioctl_desc),
+};
+
+static const struct v4l2_int_device ev76c570_int_device = {
+	.module = THIS_MODULE,
+	.name = "ev76c570",
+	.type = v4l2_int_type_slave,
+	.u = {
+		.slave = &ev76c570_slave,
+	},
+};
+
+static int ev76c570_remove(struct spi_device *spi)
+{
+	struct ev76c570_priv *data = dev_get_drvdata(&spi->dev);
+
+	v4l2_int_device_unregister(data->vd);
+	dev_info(&data->spi->dev, "v4l2 device registered\n");
+	return 0;
+}
+
 static int ev76c570_probe(struct spi_device *spi)
 {
 	struct ev76c570_priv *data = devm_kzalloc(&spi->dev, sizeof(*data),
 						  GFP_KERNEL);
 	struct ev76c570_platform_data *plat = dev_get_platdata(&spi->dev);
+	struct v4l2_int_device *vd;
 	unsigned int chip_id;
 	int ret;
 
@@ -164,6 +466,7 @@ static int ev76c570_probe(struct spi_device *spi)
 	ret = ev76c570_reset(spi);
 	if (ret < 0)
 		return ret;
+	data->spi = spi;
 	data->map8 = devm_regmap_init_spi(spi, &ev76c570_regmap_config8);
 	if (IS_ERR(data->map8))
 		return PTR_ERR(data->map8);
@@ -176,6 +479,21 @@ static int ev76c570_probe(struct spi_device *spi)
 		return ret;
 	}
 	dev_info(&spi->dev, "detected chip id 0x%04x\n", chip_id);
+	vd = devm_kzalloc(&spi->dev, sizeof(*vd), GFP_KERNEL);
+	if (!vd) {
+		dev_err(&spi->dev, "not enough memory for v4l2_int_dev\n");
+		return -ENOMEM;
+	}
+	*vd = ev76c570_int_device;
+	vd->priv = data;
+	data->vd = vd;
+	ret = v4l2_int_device_register(vd);
+	if (ret < 0) {
+		dev_err(&spi->dev, "error registering v4l2 device\n");
+		return ret;
+	}
+	dev_info(&spi->dev, "v4l2 device registered\n");
+	dev_set_drvdata(&spi->dev, vd);
 	return 0;
 }
 
