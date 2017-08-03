@@ -1,3 +1,4 @@
+#define DEBUG 1
 /*
  * Copyright (C) 2017 Vigilate
  * Author: Davide Ciminaghi <ciminaghi@gnudd.com>
@@ -112,6 +113,8 @@ static struct ev76c570_platform_data *setup_platdata(struct spi_device *spi)
 	out->reset_gpio = of_get_named_gpio_flags(n,
 						  "reset-gpio", 0,
 						  &out->reset_gpio_flags);
+	dev_dbg(&spi->dev, "%s %d: gpio flags = %d\n", __func__, __LINE__,
+		out->reset_gpio_flags);
 	if (gpio_is_valid(out->reset_gpio)) {
 		int v, ret = devm_gpio_request(dev, out->reset_gpio, "RST");
 		if (ret) {
@@ -121,6 +124,7 @@ static struct ev76c570_platform_data *setup_platdata(struct spi_device *spi)
 		/* gpio is an output, also keep it non-active */
 		v = out->reset_gpio_flags & OF_GPIO_ACTIVE_LOW ?
 			1 : 0;
+		dev_dbg(&spi->dev, "%s %d: setting rst gpio to %d\n", __func__, __LINE__, v);
 		gpio_direction_output(out->reset_gpio, v);
 	}
 	return out;
@@ -133,9 +137,11 @@ static int ev76c570_reset(struct spi_device *spi)
 
 	/* Assumes plat is a valid pointer */
 	v = plat->reset_gpio_flags & OF_GPIO_ACTIVE_LOW ? 0 : 1;
+	dev_dbg(&spi->dev, "%s %d: setting rst gpio to %d\n", __func__, __LINE__, v);
 	gpio_set_value(plat->reset_gpio, v);
 	v = v ? 0 : 1;
 	mdelay(5);
+	dev_dbg(&spi->dev, "%s %d: setting rst gpio to %d\n", __func__, __LINE__, v);
 	gpio_set_value(plat->reset_gpio, v);
 	return 0;
 }
