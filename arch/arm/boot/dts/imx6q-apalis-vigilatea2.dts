@@ -58,7 +58,7 @@
 	ev76c570_bw: ev76c570@0 {
 		     compatible = "e2v,ev76c570";
 		     spi-max-frequency = <20000000>;
-		     reset-gpio= <&gpio2 4 0>;
+		     reset-gpio= <&gpio2 4 GPIO_ACTIVE_LOW>;
 		     reg = <1>;
 		     status = "okay";
 	};
