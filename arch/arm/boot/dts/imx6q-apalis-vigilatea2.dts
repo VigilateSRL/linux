@@ -19,6 +19,8 @@
 #include "imx6qdl-apalis.dtsi"
 #include "imx6qdl-apalis-ixora.dtsi"
 
+#define PAD_CTRL_SPICS 0xa1 /* PAD_CTL_SPEED_MED | PAD_CTL_DSE_80ohm | PAD_CTL_SRE_FAST */
+
 / {
 	model = "Toradex Apalis iMX6Q/D Module on Vigilate A2 Board";
 	compatible = "toradex,apalis_imx6q-vigilatea2",
@@ -46,11 +48,56 @@
 
 
 &ecspi1 {
+	fsl,spi-num-chipselects = <3>;
+
+	cs-gpios = <&gpio5 25 0 &gpio3 19 0 &gpio3 24 0>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_ecspi1 &pinctrl_spi_cs1 &pinctrl_spi1_cs2 &pinctrl_spi1_cs3>;
 	status = "okay";
 
-/*	spidev0: spidev@1 {
-		compatible = "toradex,evalspi";
-		reg = <0>;
-		spi-max-frequency = <18000000>;
-	}; */
+	ev76c570_bw: ev76c570@0 {
+		     compatible = "e2v,ev76c570";
+		     spi-max-frequency = <20000000>;
+		     reset-gpio= <&gpio2 4 0>;
+		     reg = <1>;
+		     status = "okay";
+	};
+};
+
+&spidev0 {
+		 status = "disabled";
+};
+
+&spidev1 {
+		 status = "disabled";
+};
+
+/* Use without hw flow control */
+&uart1 {
+       pinctrl-0 = <&pinctrl_uart1_nortscts>;
+};
+
+&iomuxc {
+	ecspi {
+	       pinctrl_spi1_cs2: spi1_cs2 {
+			fsl,pins = <
+				 /* SPI1 cs 2 */
+				 MX6QDL_PAD_EIM_D19__GPIO3_IO19	PAD_CTRL_SPICS
+			>;
+		};
+		pinctrl_spi1_cs3: spi1_cs3 {
+			fsl,pins = <
+				 /* SPI1 cs 3 */
+				 MX6QDL_PAD_EIM_D24__GPIO3_IO24 PAD_CTRL_SPICS
+			>;
+		};
+	};
+	uart1 {
+	      pinctrl_uart1_nortscts: uart1_nortscts {
+			fsl,pins = <
+				MX6QDL_PAD_CSI0_DAT10__UART1_RX_DATA 0x1b0b1
+				MX6QDL_PAD_CSI0_DAT11__UART1_TX_DATA 0x1b0b1
+			>;
+	      };
+	};
 };
