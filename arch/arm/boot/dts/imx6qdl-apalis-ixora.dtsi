@@ -122,6 +122,12 @@
 		reg = <0>;
 		spi-max-frequency = <18000000>;
 	};
+
+	spidev1: spidev@1 {
+		compatible = "toradex,evalspi";
+		reg = <1>;
+		spi-max-frequency = <18000000>;
+	};
 };
 
 &can1 {
