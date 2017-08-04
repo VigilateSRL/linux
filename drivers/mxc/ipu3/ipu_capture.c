@@ -18,6 +18,7 @@
  *
  * @ingroup IPU
  */
+#define DEBUG 1
 #include <linux/clk.h>
 #include <linux/delay.h>
 #include <linux/errno.h>

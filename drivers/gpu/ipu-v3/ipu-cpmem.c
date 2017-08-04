@@ -9,6 +9,7 @@
  * http://www.opensource.org/licenses/gpl-license.html
  * http://www.gnu.org/copyleft/gpl.html
  */
+#define DEBUG 1
 #include <linux/types.h>
 #include <linux/bitrev.h>
 #include <linux/io.h>

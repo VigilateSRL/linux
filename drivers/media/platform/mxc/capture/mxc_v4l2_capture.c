@@ -1,7 +1,7 @@
 /*
  * Copyright 2004-2015 Freescale Semiconductor, Inc. All Rights Reserved.
  */
-
+#define DEBUG 1
 /*
  * The code contained herein is licensed under the GNU General Public
  * License. You may obtain a copy of the GNU General Public License
