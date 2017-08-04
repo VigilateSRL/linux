@@ -144,8 +144,8 @@ static int calc_split_resize_coeffs(unsigned int inSize, unsigned int outSize,
 		return -EINVAL;
 	}
 
-	if (outSize > 1024) {
-		pr_debug("IC output size(%d) cannot exceed 1024\n",
+	if (outSize > 1600) {
+		pr_debug("IC output size(%d) cannot exceed 1600\n",
 			outSize);
 		return -EINVAL;
 	}
@@ -156,10 +156,10 @@ static int calc_split_resize_coeffs(unsigned int inSize, unsigned int outSize,
 	}
 
 	/* Compute downsizing coefficient */
-	/* Output of downsizing unit cannot be more than 1024 */
+	/* Output of downsizing unit cannot be more than 1600 */
 	tempDownsize = 0;
 	tempSize = inSize;
-	while (((tempSize > 1024) || (tempSize >= outSize * 2)) &&
+	while (((tempSize > 1600) || (tempSize >= outSize * 2)) &&
 	       (tempDownsize < 2)) {
 		tempSize >>= 1;
 		tempDownsize++;

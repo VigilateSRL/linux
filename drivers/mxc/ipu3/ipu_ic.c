@@ -869,8 +869,8 @@ static int _calc_resize_coeffs(struct ipu_soc *ipu,
 		return -EINVAL;
 	}
 
-	if (outSize > 1024) {
-		dev_err(ipu->dev, "IC output size(%d) cannot exceed 1024\n",
+	if (outSize > 1600) {
+		dev_err(ipu->dev, "IC output size(%d) cannot exceed 1600\n",
 			outSize);
 		return -EINVAL;
 	}
@@ -881,10 +881,10 @@ static int _calc_resize_coeffs(struct ipu_soc *ipu,
 	}
 
 	/* Compute downsizing coefficient */
-	/* Output of downsizing unit cannot be more than 1024 */
+	/* Output of downsizing unit cannot be more than 1600 */
 	tempDownsize = 0;
 	tempSize = inSize;
-	while (((tempSize > 1024) || (tempSize >= outSize * 2)) &&
+	while (((tempSize > 1600) || (tempSize >= outSize * 2)) &&
 	       (tempDownsize < 2)) {
 		tempSize >>= 1;
 		tempDownsize++;
