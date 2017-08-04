@@ -503,7 +503,7 @@ static int ev76c570_probe(struct spi_device *spi)
 		return ret;
 	}
 	dev_info(&spi->dev, "v4l2 device registered\n");
-	dev_set_drvdata(&spi->dev, vd);
+	dev_set_drvdata(&spi->dev, data);
 	return 0;
 }
 
