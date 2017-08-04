@@ -532,6 +532,9 @@ static int ev76c570_probe(struct spi_device *spi)
 	data->sen.pix.width = 1600;
 	data->sen.pix.height = 1200;
 	data->sen.pix.pixelformat = V4L2_PIX_FMT_YUV420;
+	/* FIXME !!! GET IDS FROM DTS */
+	data->sen.ipu_id = 1;
+	data->sen.csi = 1;
 	data->spi = spi;
 	data->map8 = devm_regmap_init_spi(spi, &ev76c570_regmap_config8);
 	if (IS_ERR(data->map8))
