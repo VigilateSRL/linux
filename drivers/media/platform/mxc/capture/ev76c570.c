@@ -317,7 +317,7 @@ static int ioctl_s_parm(struct v4l2_int_device *s, struct v4l2_streamparm *a)
 
 	dev_dbg(&data->spi->dev, "%s\n", __func__);
 	/* Currently unsupported */
-	return -EINVAL;
+	return 0;
 }
 
 /*
