@@ -249,12 +249,13 @@ static int ioctl_enum_fmt_cap(struct v4l2_int_device *s,
  */
 static int ioctl_g_fmt_cap(struct v4l2_int_device *s, struct v4l2_format *f)
 {
+	struct sensor_data *sensdata = s->priv;
 	struct ev76c570_priv *data = to_priv(s->priv);
 
 	dev_dbg(&data->spi->dev, "%s (format type = %d)\n", __func__, f->type);
-	f->fmt.pix.width = 1600;
-	f->fmt.pix.height = 1200;
-	f->fmt.pix.pixelformat = V4L2_PIX_FMT_GREY;
+	f->fmt.pix.width = sensdata->pix.width;
+	f->fmt.pix.height = sensdata->pix.height;
+	f->fmt.pix.pixelformat = sensdata->pix.pixelformat;
 	return 0;
 }
 
@@ -476,6 +477,11 @@ static int ev76c570_probe(struct spi_device *spi)
 	ret = ev76c570_reset(spi);
 	if (ret < 0)
 		return ret;
+	data->sen.streamcap.timeperframe.denominator = 50;
+	data->sen.streamcap.timeperframe.numerator = 1;
+	data->sen.pix.width = 1600;
+	data->sen.pix.height = 1200;
+	data->sen.pix.pixelformat = V4L2_PIX_FMT_GREY;
 	data->spi = spi;
 	data->map8 = devm_regmap_init_spi(spi, &ev76c570_regmap_config8);
 	if (IS_ERR(data->map8))
