@@ -30,6 +30,7 @@
 #include <linux/module.h>
 #include <linux/regmap.h>
 #include "v4l2-int-device.h"
+#include "mxc_v4l2_capture.h"
 
 /* Registers defines */
 #define EV76C570_REG0 0
@@ -40,12 +41,15 @@
 #define EV76C570_CHIP_ID 0x7f
 
 struct ev76c570_priv {
+	struct sensor_data sen;
 	struct regmap *map8;
 	struct regmap *map16;
 	int reset_gpio;
 	struct spi_device *spi;
 	struct v4l2_int_device *vd;
 };
+
+#define to_priv(a) container_of(a, struct ev76c570_priv, sen)
 
 struct ev76c570_platform_data {
 	int reset_gpio;
@@ -154,7 +158,7 @@ static int ev76c570_reset(struct spi_device *spi)
  */
 static int ioctl_dev_init(struct v4l2_int_device *s)
 {
-	struct ev76c570_priv *data = s->priv;
+	struct ev76c570_priv *data = to_priv(s->priv);
 
 	dev_dbg(&data->spi->dev, "%s", __func__);
 	return 0;
@@ -168,7 +172,7 @@ static int ioctl_dev_init(struct v4l2_int_device *s)
  */
 static int ioctl_dev_exit(struct v4l2_int_device *s)
 {
-	struct ev76c570_priv *data = s->priv;
+	struct ev76c570_priv *data = to_priv(s->priv);
 
 	dev_dbg(&data->spi->dev, "%s", __func__);
 	return 0;
@@ -184,7 +188,7 @@ static int ioctl_dev_exit(struct v4l2_int_device *s)
  */
 static int ioctl_s_power(struct v4l2_int_device *s, int on)
 {
-	struct ev76c570_priv *data = s->priv;
+	struct ev76c570_priv *data = to_priv(s->priv);
 
 	dev_dbg(&data->spi->dev, "%s (%d)", __func__, on);
 	return 0;
@@ -198,7 +202,7 @@ static int ioctl_g_ifparm(struct v4l2_int_device *s, struct v4l2_ifparm *p)
 		return -1;
 	}
 
-	data = s->priv;
+	data = to_priv(s->priv);
 	memset(p, 0, sizeof(*p));
 	p->if_type = V4L2_IF_TYPE_BT656;
 	p->u.bt656.mode = V4L2_IF_TYPE_BT656_MODE_NOBT_10BIT;
@@ -212,7 +216,7 @@ static int ioctl_g_ifparm(struct v4l2_int_device *s, struct v4l2_ifparm *p)
  */
 static int ioctl_init(struct v4l2_int_device *s)
 {
-	struct ev76c570_priv *data = s->priv;
+	struct ev76c570_priv *data = to_priv(s->priv);
 
 	dev_dbg(&data->spi->dev, "%s\n", __func__);
 	return 0;
@@ -245,7 +249,7 @@ static int ioctl_enum_fmt_cap(struct v4l2_int_device *s,
  */
 static int ioctl_g_fmt_cap(struct v4l2_int_device *s, struct v4l2_format *f)
 {
-	struct ev76c570_priv *data = s->priv;
+	struct ev76c570_priv *data = to_priv(s->priv);
 
 	dev_dbg(&data->spi->dev, "%s (format type = %d)\n", __func__, f->type);
 	f->fmt.pix.width = 1600;
@@ -263,7 +267,7 @@ static int ioctl_g_fmt_cap(struct v4l2_int_device *s, struct v4l2_format *f)
  */
 static int ioctl_g_parm(struct v4l2_int_device *s, struct v4l2_streamparm *a)
 {
-	struct ev76c570_priv *data = s->priv;
+	struct ev76c570_priv *data = to_priv(s->priv);
 	struct v4l2_captureparm *cparm = &a->parm.capture;
 
 	dev_dbg(&data->spi->dev, "%s", __func__);
@@ -308,7 +312,7 @@ static int ioctl_g_parm(struct v4l2_int_device *s, struct v4l2_streamparm *a)
  */
 static int ioctl_s_parm(struct v4l2_int_device *s, struct v4l2_streamparm *a)
 {
-	struct ev76c570_priv *data = s->priv;
+	struct ev76c570_priv *data = to_priv(s->priv);
 
 	dev_dbg(&data->spi->dev, "%s\n", __func__);
 	/* Currently unsupported */
@@ -491,7 +495,7 @@ static int ev76c570_probe(struct spi_device *spi)
 		return -ENOMEM;
 	}
 	*vd = ev76c570_int_device;
-	vd->priv = data;
+	vd->priv = &data->sen;
 	data->vd = vd;
 	ret = v4l2_int_device_register(vd);
 	if (ret < 0) {
