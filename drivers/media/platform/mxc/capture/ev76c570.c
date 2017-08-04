@@ -81,7 +81,8 @@ static const struct regmap_config ev76c570_regmap_config8 = {
 	.reg_bits = 8,
 	.val_bits = 8,
 	.val_format_endian = REGMAP_ENDIAN_BIG,
-
+	.read_flag_mask = 0,
+	.write_flag_mask = 0x80,
 	.max_register = EV76C570_ABORT_MBX,
 	.cache_type = REGCACHE_NONE,
 
@@ -92,7 +93,8 @@ static const struct regmap_config ev76c570_regmap_config16 = {
 	.reg_bits = 8,
 	.val_bits = 16,
 	.val_format_endian = REGMAP_ENDIAN_BIG,
-
+	.read_flag_mask = 0,
+	.write_flag_mask = 0x80,
 	.max_register = EV76C570_CHIP_ID,
 	.cache_type = REGCACHE_RBTREE,
 
