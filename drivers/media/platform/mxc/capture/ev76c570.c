@@ -38,6 +38,9 @@
 #define EV76C570_CALIB_MBX 2
 #define EV76C570_ABORT_MBX 3
 #define EV76C570_REG_LINE_CFG 4
+#define EV76C570_REG_MISCEL2 7
+#define EV76C570_REG_PLL_CFG 9
+#define EV76C570_REG_CTRL_CFG 0xb
 #define EV76C570_CHIP_ID 0x7f
 
 struct ev76c570_priv {
@@ -158,11 +161,56 @@ static int ev76c570_reset(struct spi_device *spi)
  *
  * Initialise the device when slave attaches to the master.
  */
+struct ev76c570_reg {
+	int index;
+	uint16_t val;
+};
+
+static const struct ev76c570_reg regs_init_tab[] = {
+	{
+		.index = EV76C570_REG_SOFT_RESET,
+		.val = 0,
+	},
+	{
+		.index = EV76C570_REG_PLL_CFG,
+		/* Valore per ottenere 114MHz:
+		   M = 164
+		   N = 12
+		   P = 4
+		*/
+		.val = 0x6551,
+	},
+	{
+		.index = EV76C570_REG_CTRL_CFG,
+		/* attiva trigger da spi | default | flash durante integrazione | acq continua */
+		.val = 0x02 | 0x04 | 0x40 | 0x08,
+	},
+	{
+		.index = EV76C570_REG_MISCEL2,
+		/* default | test pattern still */
+		.val = 0x0a01 | 0x20,
+	},
+	{
+		.index = -1,
+	},
+};
+
 static int ioctl_dev_init(struct v4l2_int_device *s)
 {
 	struct ev76c570_priv *data = to_priv(s->priv);
+	const struct ev76c570_reg *ptr;
 
 	dev_dbg(&data->spi->dev, "%s", __func__);
+	for (ptr = regs_init_tab; ptr->index != -1; ptr++) {
+		unsigned int v;
+
+		ev76c570_write_reg(data, ptr->index, ptr->val);
+		dev_dbg(&data->spi->dev, "%s: writing 0x%04x to 0x%04x\n",
+			__func__, ptr->val, ptr->index);
+		ev76c570_read_reg(data, ptr->index, &v);
+		dev_dbg(&data->spi->dev, "%s: read 0x%04x from 0x%04x\n",
+			__func__, v, ptr->index);
+	}
 	return 0;
 }
 
