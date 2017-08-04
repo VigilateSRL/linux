@@ -30,7 +30,7 @@
         /* Add one more capture master v4l2 device */
 	v4l2_cap_1 {
 		compatible = "fsl,imx6q-v4l2-capture";
-		ipu_id = <0>;
+		ipu_id = <1>;
 		csi_id = <1>;
 		mclk_source = <0>;
 		status = "okay";
