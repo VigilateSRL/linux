@@ -285,7 +285,7 @@ static int ioctl_enum_fmt_cap(struct v4l2_int_device *s,
 	if (fmt->index > 0)
 		return -EINVAL;
 	/* Monochrome only supported at the moment */
-	fmt->pixelformat = V4L2_PIX_FMT_YUV420;
+	fmt->pixelformat = V4L2_PIX_FMT_GREY;
 	return 0;
 }
 
@@ -531,7 +531,7 @@ static int ev76c570_probe(struct spi_device *spi)
 	data->sen.streamcap.timeperframe.numerator = 1;
 	data->sen.pix.width = 1600;
 	data->sen.pix.height = 1200;
-	data->sen.pix.pixelformat = V4L2_PIX_FMT_YUV420;
+	data->sen.pix.pixelformat = V4L2_PIX_FMT_GREY;
 	/* FIXME !!! GET IDS FROM DTS */
 	data->sen.ipu_id = 1;
 	data->sen.csi = 1;
