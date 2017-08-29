@@ -537,9 +537,19 @@ static int ev76c570_probe(struct spi_device *spi)
 	data->sen.pix.width = 1600;
 	data->sen.pix.height = 1200;
 	data->sen.pix.pixelformat = V4L2_PIX_FMT_GREY;
-	/* FIXME !!! GET IDS FROM DTS */
-	data->sen.ipu_id = 1;
-	data->sen.csi = 1;
+	ret = of_property_read_u32(spi->dev.of_node, "ipu_id",
+				   &data->sen.ipu_id);
+	if (ret) {
+		dev_err(&spi->dev, "ipu_id missing or invalid\n");
+		return ret;
+	}
+
+	ret = of_property_read_u32(spi->dev.of_node, "csi_id",
+				   &data->sen.csi);
+	if (ret) {
+		dev_err(&spi->dev, "csi_id missing or invalid\n");
+		return ret;
+	}
 	data->spi = spi;
 	data->map8 = devm_regmap_init_spi(spi, &ev76c570_regmap_config8);
 	if (IS_ERR(data->map8))
