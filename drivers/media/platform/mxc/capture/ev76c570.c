@@ -256,6 +256,11 @@ static int ioctl_g_ifparm(struct v4l2_int_device *s, struct v4l2_ifparm *p)
 	memset(p, 0, sizeof(*p));
 	p->if_type = V4L2_IF_TYPE_BT656;
 	p->u.bt656.mode = V4L2_IF_TYPE_BT656_MODE_NOBT_10BIT;
+	/*
+	 * HACK: force csi_param.clk_mode = IPU_CSI_CLK_MODE_GATED_CLK in
+	 * mxc_v4l2_s_param
+	 */
+	p->u.bt656.clock_curr = -1;
 	/* everything else is 0. Is this OK ? */
 	return 0;
 }
