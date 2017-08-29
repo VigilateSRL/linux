@@ -55,6 +55,18 @@
 	pinctrl-0 = <&pinctrl_ecspi1 &pinctrl_spi_cs1 &pinctrl_spi1_cs2 &pinctrl_spi1_cs3>;
 	status = "okay";
 
+	ev76c570_bw0: ev76c570@0 {
+		     compatible = "e2v,ev76c570";
+		     pinctrl-names = "default";
+		     pinctrl-0 = <&pinctrl_ipu1_csi0>;
+		     spi-max-frequency = <10000000>;
+		     ipu_id = <0>;
+		     csi_id = <0>;
+		     reset-gpio= <&gpio2 4 GPIO_ACTIVE_LOW>;
+		     reg = <0>;
+		     status = "okay";
+	};
+
 	ev76c570_bw1: ev76c570@1 {
 		     compatible = "e2v,ev76c570";
 		     pinctrl-names = "default";
