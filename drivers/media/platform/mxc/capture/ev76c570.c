@@ -529,9 +529,11 @@ static int ev76c570_probe(struct spi_device *spi)
 		}
 		spi->dev.platform_data = plat;
 	}
-	ret = ev76c570_reset(spi);
-	if (ret < 0)
-		return ret;
+	if (gpio_is_valid(plat->reset_gpio)) {
+		ret = ev76c570_reset(spi);
+		if (ret < 0)
+			return ret;
+	}
 	data->sen.streamcap.timeperframe.denominator = 50;
 	data->sen.streamcap.timeperframe.numerator = 1;
 	data->sen.pix.width = 1600;
