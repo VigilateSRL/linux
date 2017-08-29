@@ -50,6 +50,7 @@ struct ev76c570_priv {
 	int reset_gpio;
 	struct spi_device *spi;
 	struct v4l2_int_device *vd;
+	char vdname[20];
 };
 
 #define to_priv(a) container_of(a, struct ev76c570_priv, sen)
@@ -514,7 +515,9 @@ static int ev76c570_probe(struct spi_device *spi)
 						  GFP_KERNEL);
 	struct ev76c570_platform_data *plat = dev_get_platdata(&spi->dev);
 	struct v4l2_int_device *vd;
+	struct v4l2_int_slave *slave;
 	unsigned int chip_id;
+	static int instance_id = 0;
 	int ret;
 
 	if (!data) {
@@ -552,6 +555,8 @@ static int ev76c570_probe(struct spi_device *spi)
 		dev_err(&spi->dev, "csi_id missing or invalid\n");
 		return ret;
 	}
+	snprintf(data->vdname, sizeof(data->vdname) - 1, "ev76c570.%d\n",
+		 instance_id++);
 	data->spi = spi;
 	data->map8 = devm_regmap_init_spi(spi, &ev76c570_regmap_config8);
 	if (IS_ERR(data->map8))
@@ -570,7 +575,15 @@ static int ev76c570_probe(struct spi_device *spi)
 		dev_err(&spi->dev, "not enough memory for v4l2_int_dev\n");
 		return -ENOMEM;
 	}
+	slave = devm_kzalloc(&spi->dev, sizeof(*slave), GFP_KERNEL);
+	if (!slave) {
+		dev_err(&spi->dev, "not enough memory for v4l2_int slave data\n");
+		return -ENOMEM;
+	}
 	*vd = ev76c570_int_device;
+	strncpy(vd->name, data->vdname, sizeof(vd->name));
+	*slave = ev76c570_slave;
+	vd->u.slave = slave;
 	vd->priv = &data->sen;
 	data->vd = vd;
 	ret = v4l2_int_device_register(vd);
