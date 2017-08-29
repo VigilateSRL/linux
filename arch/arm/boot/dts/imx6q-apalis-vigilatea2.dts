@@ -55,7 +55,7 @@
 	pinctrl-0 = <&pinctrl_ecspi1 &pinctrl_spi_cs1 &pinctrl_spi1_cs2 &pinctrl_spi1_cs3>;
 	status = "okay";
 
-	ev76c570_bw: ev76c570@1 {
+	ev76c570_bw1: ev76c570@1 {
 		     compatible = "e2v,ev76c570";
 		     pinctrl-names = "default";
 		     pinctrl-0 = <&pinctrl_ipu2_csi1>;
