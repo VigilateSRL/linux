@@ -189,7 +189,7 @@ static const struct ev76c570_reg regs_init_tab[] = {
 	{
 		.index = EV76C570_REG_MISCEL2,
 		/* default | test pattern still */
-		.val = 0x3a01 | 0x20,
+		.val = 0x2a01 | 0x20,
 	},
 	{
 		.index = -1,
