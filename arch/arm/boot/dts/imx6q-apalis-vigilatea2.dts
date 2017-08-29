@@ -74,7 +74,8 @@
 		     spi-max-frequency = <10000000>;
 		     ipu_id = <1>;
 		     csi_id = <1>;
-		     reset-gpio= <&gpio2 4 GPIO_ACTIVE_LOW>;
+		     /* Reset is common, don't reset twice !! */
+		     /* reset-gpio= <&gpio2 4 GPIO_ACTIVE_LOW>; */
 		     reg = <1>;
 		     status = "okay";
 	};
