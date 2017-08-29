@@ -1296,7 +1296,7 @@ static int mxc_v4l2_s_param(cam_data *cam, struct v4l2_streamparm *parm)
 	struct v4l2_format cam_fmt;
 	struct v4l2_streamparm currentparm;
 	ipu_csi_signal_cfg_t csi_param;
-	u32 current_fps, parm_fps;
+	u32 current_fps, parm_fps, ipu_fmt;
 	int err = 0;
 
 	pr_debug("In mxc_v4l2_s_param\n");
@@ -1404,6 +1404,12 @@ static int mxc_v4l2_s_param(cam_data *cam, struct v4l2_streamparm *parm)
 		cam->crop_current.height = cam->crop_bounds.height;
 	}
 
+	err = v4l2_to_ipu_fmt(cam_fmt.fmt.pix.pixelformat, &ipu_fmt);
+	if (err < 0) {
+		printk(KERN_ERR "%s: invalid format\n", __func__);
+		return err;
+	}
+
 	/* This essentially loses the data at the left and bottom of the image
 	 * giving a digital zoom image, if crop_current is less than the full
 	 * size of the image. */
@@ -1414,7 +1420,7 @@ static int mxc_v4l2_s_param(cam_data *cam, struct v4l2_streamparm *parm)
 			       cam->csi);
 	ipu_csi_init_interface(cam->ipu, cam->crop_bounds.width,
 			       cam->crop_bounds.height,
-			       cam_fmt.fmt.pix.pixelformat, csi_param);
+			       ipu_fmt, csi_param);
 
 
 exit:

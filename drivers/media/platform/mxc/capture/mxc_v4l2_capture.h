@@ -268,4 +268,48 @@ void set_mclk_rate(uint32_t *p_mclk_freq, uint32_t csi);
 void mxc_camera_common_lock(void);
 void mxc_camera_common_unlock(void);
 
+static inline int v4l2_to_ipu_fmt(u32 in, u32 *out)
+{
+	switch (in) {
+	case V4L2_PIX_FMT_YUV420:
+		*out = IPU_PIX_FMT_YUV420P;
+		break;
+	case V4L2_PIX_FMT_YVU420:
+		*out = IPU_PIX_FMT_YVU420P;
+		break;
+	case V4L2_PIX_FMT_YUV422P:
+		*out = IPU_PIX_FMT_YUV422P;
+		break;
+	case V4L2_PIX_FMT_UYVY:
+		*out = IPU_PIX_FMT_UYVY;
+		break;
+	case V4L2_PIX_FMT_YUYV:
+		*out = IPU_PIX_FMT_YUYV;
+		break;
+	case V4L2_PIX_FMT_NV12:
+		*out = IPU_PIX_FMT_NV12;
+		break;
+	case V4L2_PIX_FMT_BGR24:
+		*out = IPU_PIX_FMT_BGR24;
+		break;
+	case V4L2_PIX_FMT_RGB24:
+		*out = IPU_PIX_FMT_RGB24;
+	case V4L2_PIX_FMT_RGB565:
+		*out = IPU_PIX_FMT_RGB565;
+		break;
+	case V4L2_PIX_FMT_BGR32:
+		*out = IPU_PIX_FMT_BGR32;
+		break;
+	case V4L2_PIX_FMT_RGB32:
+		*out = IPU_PIX_FMT_RGB32;
+		break;
+	case V4L2_PIX_FMT_GREY:
+		*out = IPU_PIX_FMT_GENERIC;
+		break;
+	default:
+		return -EINVAL;
+	}
+	return 0;
+}
+
 #endif				/* __MXC_V4L2_CAPTURE_H__ */

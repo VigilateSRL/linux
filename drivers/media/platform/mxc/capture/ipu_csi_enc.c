@@ -104,31 +104,10 @@ static int csi_enc_setup(cam_data *cam)
 		return -EINVAL;
 	}
 
-	if (cam->v2f.fmt.pix.pixelformat == V4L2_PIX_FMT_YUV420)
-		pixel_fmt = IPU_PIX_FMT_YUV420P;
-	else if (cam->v2f.fmt.pix.pixelformat == V4L2_PIX_FMT_YVU420)
-		pixel_fmt = IPU_PIX_FMT_YVU420P;
-	else if (cam->v2f.fmt.pix.pixelformat == V4L2_PIX_FMT_YUV422P)
-		pixel_fmt = IPU_PIX_FMT_YUV422P;
-	else if (cam->v2f.fmt.pix.pixelformat == V4L2_PIX_FMT_UYVY)
-		pixel_fmt = IPU_PIX_FMT_UYVY;
-	else if (cam->v2f.fmt.pix.pixelformat == V4L2_PIX_FMT_YUYV)
-		pixel_fmt = IPU_PIX_FMT_YUYV;
-	else if (cam->v2f.fmt.pix.pixelformat == V4L2_PIX_FMT_NV12)
-		pixel_fmt = IPU_PIX_FMT_NV12;
-	else if (cam->v2f.fmt.pix.pixelformat == V4L2_PIX_FMT_BGR24)
-		pixel_fmt = IPU_PIX_FMT_BGR24;
-	else if (cam->v2f.fmt.pix.pixelformat == V4L2_PIX_FMT_RGB24)
-		pixel_fmt = IPU_PIX_FMT_RGB24;
-	else if (cam->v2f.fmt.pix.pixelformat == V4L2_PIX_FMT_RGB565)
-		pixel_fmt = IPU_PIX_FMT_RGB565;
-	else if (cam->v2f.fmt.pix.pixelformat == V4L2_PIX_FMT_BGR32)
-		pixel_fmt = IPU_PIX_FMT_BGR32;
-	else if (cam->v2f.fmt.pix.pixelformat == V4L2_PIX_FMT_RGB32)
-		pixel_fmt = IPU_PIX_FMT_RGB32;
-	else {
-		printk(KERN_ERR "format not supported\n");
-		return -EINVAL;
+	err = v4l2_to_ipu_fmt(cam->v2f.fmt.pix.pixelformat, &pixel_fmt);
+	if (err < 0) {
+		printk(KERN_ERR "%s: unsupported pixel format\n", __func__);
+		return err;
 	}
 
 #ifdef CONFIG_MXC_MIPI_CSI2
