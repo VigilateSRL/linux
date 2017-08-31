@@ -50,6 +50,14 @@
 		status = "disabled";
          };
 
+&i2c3 {
+	sht21@40 {
+		 compatible = "sensiron,sht21";
+		 reg = <0x40>;
+		 status = "okay";
+	};
+};
+
 
 &ecspi1 {
 	fsl,spi-num-chipselects = <3>;
