@@ -37,10 +37,14 @@
 	};
 };
 
-/* Disable adv7180 and max9526 */
+/* Disable adv7180, adv7280 and max9526 */
 &adv7180 {
 		status = "disabled";
           };
+
+&adv7280 {
+		status = "disabled";
+	 };
 
 &max9526 {
 		status = "disabled";
