@@ -3645,6 +3645,7 @@ CONFIG_STAGING=y
 # CONFIG_ADIS16220 is not set
 # CONFIG_ADIS16240 is not set
 # CONFIG_LIS3L02DQ is not set
+# CONFIG_SCA3000 is not set
 
 #
 # Analog to digital converters
@@ -3717,6 +3718,7 @@ CONFIG_STMPE_ADC=y
 #
 # Triggers - standalone
 #
+# CONFIG_IIO_PERIODIC_RTC_TRIGGER is not set
 # CONFIG_IIO_SIMPLE_DUMMY is not set
 # CONFIG_FB_SM7XX is not set
 # CONFIG_FB_SM750 is not set
@@ -3792,8 +3794,12 @@ CONFIG_CLKSRC_MMIO=y
 # CONFIG_EXTCON is not set
 # CONFIG_MEMORY is not set
 CONFIG_IIO=y
-# CONFIG_IIO_BUFFER is not set
-# CONFIG_IIO_TRIGGER is not set
+CONFIG_IIO_BUFFER=y
+# CONFIG_IIO_BUFFER_CB is not set
+CONFIG_IIO_KFIFO_BUF=y
+CONFIG_IIO_TRIGGERED_BUFFER=y
+CONFIG_IIO_TRIGGER=y
+CONFIG_IIO_CONSUMERS_PER_TRIGGER=2
 
 #
 # Accelerometers
@@ -3802,7 +3808,7 @@ CONFIG_IIO=y
 # CONFIG_BMC150_ACCEL is not set
 # CONFIG_IIO_ST_ACCEL_3AXIS is not set
 # CONFIG_KXSD9 is not set
-# CONFIG_MMA8452 is not set
+CONFIG_MMA8452=y
 # CONFIG_KXCJK1013 is not set
 # CONFIG_MMA9551 is not set
 # CONFIG_MMA9553 is not set
@@ -3937,6 +3943,12 @@ CONFIG_IIO=y
 #
 # Inclinometer sensors
 #
+
+#
+# Triggers - standalone
+#
+CONFIG_IIO_INTERRUPT_TRIGGER=y
+CONFIG_IIO_SYSFS_TRIGGER=y
 
 #
 # Pressure sensors
