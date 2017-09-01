@@ -696,8 +696,15 @@ static int mma8452_reset(struct i2c_client *client)
 
 	ret = i2c_smbus_write_byte_data(client,	MMA8452_CTRL_REG2,
 					MMA8452_CTRL_REG2_RST);
+	/*
+	 * Although this i2c write returns error on vigilate a2, the sensor
+	 * works anyway. Let's ignore the result and go on, for the
+	 * moment at least. dciminaghi
+	 */
+#if 0
 	if (ret < 0)
 		return ret;
+#endif
 
 	for (i = 0; i < 10; i++) {
 		usleep_range(100, 200);
