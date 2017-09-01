@@ -737,14 +737,6 @@ static int mma8452_probe(struct i2c_client *client,
 	int ret;
 	const struct of_device_id *match;
 
-	ret = i2c_smbus_read_byte_data(client, MMA8452_WHO_AM_I);
-	if (ret < 0)
-		return ret;
-
-	if (ret != MMA8452_DEVICE_ID && ret != MMA8453_DEVICE_ID &&
-	    ret != FXLS8471_DEVICE_ID)
-		return -ENODEV;
-
 	match = of_match_device(mma8452_dt_ids, &client->dev);
 	if (!match) {
 		dev_err(&client->dev, "unknown device model\n");
