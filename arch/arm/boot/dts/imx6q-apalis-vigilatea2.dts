@@ -56,6 +56,12 @@
 		 reg = <0x40>;
 		 status = "okay";
 	};
+
+	mma8452@1e {
+		compatible = "fsl,fxls8471";
+		reg = <0x1e>;
+		status = "okay";
+	};
 };
 
 
