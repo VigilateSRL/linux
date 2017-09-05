@@ -486,9 +486,36 @@ static struct v4l2_int_ioctl_desc ev76c570_ioctl_desc[] = {
 	  (v4l2_int_ioctl_func *)ioctl_g_chip_ident },
 };
 
+static int ev76c570_v4l2_write_reg(struct v4l2_int_device *s, u16 reg, u16 val)
+{
+	struct ev76c570_priv *data = to_priv(s->priv);
+	unsigned r = reg, v = val;
+
+	return ev76c570_write_reg(data, r, v);
+}
+
+static int ev76c570_v4l2_read_reg(struct v4l2_int_device *s, u16 reg, u16 *val)
+{
+	struct ev76c570_priv *data = to_priv(s->priv);
+	unsigned r = reg, v;
+	int ret;
+
+	ret = ev76c570_read_reg(data, r, &v);
+	if (ret < 0)
+		return ret;
+	*val = v;
+	return ret;
+}
+
+static const struct v4l2_int_slave_ops slave_ops = {
+	.write_reg = ev76c570_v4l2_write_reg,
+	.read_reg = ev76c570_v4l2_read_reg
+};
+
 static struct v4l2_int_slave ev76c570_slave = {
 	.ioctls = ev76c570_ioctl_desc,
 	.num_ioctls = ARRAY_SIZE(ev76c570_ioctl_desc),
+	.ops = &slave_ops,
 };
 
 static const struct v4l2_int_device ev76c570_int_device = {
