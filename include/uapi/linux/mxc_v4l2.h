@@ -58,6 +58,11 @@ struct v4l2_mxc_dest_crop {
 	struct v4l2_mxc_offset   offset;
 };
 
+struct mxc_v4l2_reg {
+	__u16 index;
+	__u16 value;
+};
+
 /*
  * Private IOCTLs
  *
@@ -70,4 +75,9 @@ struct v4l2_mxc_dest_crop {
 	_IOWR('V', BASE_VIDIOC_PRIVATE + 2, struct v4l2_crop)
 #define VIDIOC_S_DEST_CROP \
 	_IOWR('V', BASE_VIDIOC_PRIVATE + 3, struct v4l2_mxc_dest_crop)
+#define VIDIOC_MXC_V4L2_READ_REG \
+	_IOWR('V', BASE_VIDIOC_PRIVATE + 4, struct mxc_v4l2_reg)
+#define VIDIOC_MXC_V4L2_WRITE_REG \
+	_IOWR('V', BASE_VIDIOC_PRIVATE + 5, struct mxc_v4l2_reg)
+
 #endif
