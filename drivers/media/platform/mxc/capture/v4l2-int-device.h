@@ -59,6 +59,11 @@ struct v4l2_int_ioctl_desc {
 	v4l2_int_ioctl_func *func;
 };
 
+struct v4l2_int_slave_ops {
+	int (*write_reg)(struct v4l2_int_device *, u16 reg, u16 val);
+	int (*read_reg)(struct v4l2_int_device *, u16 reg, u16 *val);
+};
+
 struct v4l2_int_slave {
 	/* Don't touch master. */
 	struct v4l2_int_device *master;
@@ -67,6 +72,8 @@ struct v4l2_int_slave {
 
 	int num_ioctls;
 	struct v4l2_int_ioctl_desc *ioctls;
+
+	const struct v4l2_int_slave_ops *ops;
 };
 
 struct v4l2_int_device {

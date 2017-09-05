@@ -2504,6 +2504,32 @@ static long mxc_v4l_do_ioctl(struct file *file,
 		}
 		break;
 	}
+	case VIDIOC_MXC_V4L2_READ_REG:
+	case VIDIOC_MXC_V4L2_WRITE_REG:
+	{
+		struct mxc_v4l2_reg *r = arg;
+		struct v4l2_int_slave *s;
+
+		if (!cam->sensor || cam->sensor->type != v4l2_int_type_slave) {
+			pr_err("ERROR: v4l2 capture: slave not found rd/wr reg\n");
+			retval = -ENODEV;
+			break;
+		}
+		s = cam->sensor->u.slave;
+		if (!s->ops ||
+		    (ioctlnr == VIDIOC_MXC_V4L2_READ_REG &&
+		     !s->ops->read_reg) ||
+		    (ioctlnr == VIDIOC_MXC_V4L2_WRITE_REG &&
+		     !s->ops->write_reg)) {
+			pr_err("ERROR: v4l2 capture: ioctl not supported\n");
+			retval = -EOPNOTSUPP;
+			break;
+		}
+		retval = ioctlnr == VIDIOC_MXC_V4L2_READ_REG ?
+			s->ops->read_reg(cam->sensor, r->index, &r->value) :
+			s->ops->write_reg(cam->sensor, r->index, r->value);
+		break;
+	}
 	case VIDIOC_TRY_FMT:
 	case VIDIOC_QUERYCTRL:
 	case VIDIOC_G_TUNER:
