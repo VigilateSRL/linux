@@ -407,16 +407,22 @@ static void __init imx6q_opp_check_speed_grading(struct device *cpu_dev)
 	val &= 0x3;
 	val = 0x3;
 
-	if ((val != OCOTP_CFG3_SPEED_1P2GHZ) && cpu_is_imx6q())
+	if ((val != OCOTP_CFG3_SPEED_1P2GHZ) && cpu_is_imx6q()) {
+		pr_info("disabling 1.2GHz freq\n");
 		if (dev_pm_opp_disable(cpu_dev, 1200000000))
 			pr_warn("failed to disable 1.2 GHz OPP\n");
-	if (val < OCOTP_CFG3_SPEED_996MHZ)
+	}
+	if (val < OCOTP_CFG3_SPEED_996MHZ) {
+		pr_info("disabling 996MHz freq\n");
 		if (dev_pm_opp_disable(cpu_dev, 996000000))
 			pr_warn("failed to disable 996 MHz OPP\n");
+	}
 	if (cpu_is_imx6q()) {
-		if (val != OCOTP_CFG3_SPEED_852MHZ)
+		if (val != OCOTP_CFG3_SPEED_852MHZ) {
+			pr_info("disabling 852MHz freq\n");
 			if (dev_pm_opp_disable(cpu_dev, 852000000))
 				pr_warn("failed to disable 852 MHz OPP\n");
+		}
 	}
 	iounmap(base);
 
