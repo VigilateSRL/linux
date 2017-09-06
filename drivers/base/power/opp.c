@@ -873,6 +873,8 @@ int of_init_opp_table(struct device *dev)
 		unsigned long freq = be32_to_cpup(val++) * 1000;
 		unsigned long volt = be32_to_cpup(val++);
 
+		dev_info(dev, "CPU operating point: %luKHz @%luuV\n",
+			 freq, volt);
 		if (_opp_add_dynamic(dev, freq, volt, false))
 			dev_warn(dev, "%s: Failed to add OPP %ld\n",
 				 __func__, freq);
