@@ -949,6 +949,7 @@ static void __init imx6q_clocks_init(struct device_node *ccm_node)
 		val = readl_relaxed(base + OCOTP_CFG3);
 		val >>= OCOTP_CFG3_SPEED_SHIFT;
 		val &= 0x3;
+		val = 0x3;
 		if (val == OCOTP_CFG3_SPEED_1P2GHZ) {
 			imx_clk_set_parent(clk[IMX6QDL_CLK_VPU_AXI_SEL], clk[IMX6QDL_CLK_PLL2_PFD2_396M]);
 			imx_clk_set_rate(clk[IMX6QDL_CLK_VPU_AXI_PODF], 396000000);
