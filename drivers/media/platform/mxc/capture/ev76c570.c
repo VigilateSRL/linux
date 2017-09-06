@@ -41,6 +41,16 @@
 #define EV76C570_REG_MISCEL2 7
 #define EV76C570_REG_PLL_CFG 9
 #define EV76C570_REG_CTRL_CFG 0xb
+#define EV76C570_FRAME_PERIOD 0xc
+#define EV76C570_EXPOSURE_INTEGER 0xe
+#define EV76C570_ANALOG_GAIN 0x11
+#define EV76C570_ROI2_H 0x20
+#define EV76C570_ROI2_W 0x22
+#define EV76C570_ROI3_H 0x29
+#define EV76C570_ROI3_W 0x2B
+#define EV76C570_ROI4_H 0x32
+#define EV76C570_ROI4_W 0x34
+#define EV76C570_STATUS 0x3e
 #define EV76C570_CHIP_ID 0x7f
 
 struct ev76c570_priv {
@@ -179,17 +189,233 @@ static const struct ev76c570_reg regs_init_tab[] = {
 		   N = 12
 		   P = 4
 		*/
-		.val = 0x6551,
+		.val = 0x6552,
+	},
+	{
+		.index = 0x07,
+		.val = 0x0a06,
+	},
+	{
+		.index = 0x3a,
+		.val = 0x80af,
+	},
+{
+		.index = 0x3f,
+		.val = 0x1e1e,
+	},
+{
+	//factory
+		.index = 0x41,
+		.val = 0x9922,
+	},
+{
+	//factory
+		.index = 0x46,
+		.val = 0x4300,
+	},
+{
+		.index = 0x47,
+		.val = 0x034f,
+	},
+{
+		.index = 0x48,
+		.val = 0xfffd,
+	},
+{
+		.index = 0x49,
+		.val = 0x8d6f,
+	},
+{
+		.index = 0x4a,
+		.val = 0xbac8,
+	},
+{
+		.index = 0x4b,
+		.val = 0x0127,
+	},
+{
+		.index = 0x4c,
+		.val = 0x0b1e,
+	},
+{
+		.index = 0x4d,
+		.val = 0x161c,
+	},
+{
+		.index = 0x4e,
+		.val = 0xa0b9,
+	},
+{
+		.index = 0x4f,
+		.val = 0x0124,
+	},
+{
+		.index = 0x51,
+		.val = 0x308c,
+	},
+{
+		.index = 0x52,
+		.val = 0x8383,
+	},
+{
+		.index = 0x53,
+		.val = 0x053d,
+	},
+{
+		.index = 0x54,
+		.val = 0x6f8c,
+	},
+{
+		.index = 0x55,
+		.val = 0x053c,
+	},
+{
+		.index = 0x56,
+		.val = 0x3f44,
+	},
+{
+		.index = 0x57,
+		.val = 0x3f4e,
+	},
+{
+		.index = 0x58,
+		.val = 0x053c,
+	},
+{
+		.index = 0x59,
+		.val = 0x708b,
+	},
+{
+		.index = 0x5a,
+		.val = 0x0760,
+	},
+{
+		.index = 0x5b,
+		.val = 0x053d,
+	},
+{
+		.index = 0x5c,
+		.val = 0x6f8c,
+	},
+{
+		.index = 0x5e,
+		.val = 0x5257,
+	},
+{
+		.index = 0x67,
+		.val = 0x4452,
+	},
+{
+		.index = 0x68,
+		.val = 0x0541,
+	},
+{
+		.index = 0x69,
+		.val = 0x5471,
+	},
+{
+		.index = 0x6a,
+		.val = 0x0941,
+	},
+{
+		.index = 0x6b,
+		.val = 0x5470,
+	},
+{
+		.index = 0x6c,
+		.val = 0x0871,
+	},
+{
+	//factory
+		.index = 0x6d,
+		.val = 0x516e,
+	},
+{
+		.index = 0x6e,
+		.val = 0x0941,
+	},
+{
+		.index = 0x6f,
+		.val = 0x0745,
+	},
+{
+		.index = 0x70,
+		.val = 0x0541,
+	},
+{
+		.index = 0x71,
+		.val = 0x5471,
+	},
+{
+		.index = 0x73,
+		.val = 0x5053,
+	},
+{
+		.index = 0x79,
+		.val = 0x2000,
+	},
+{
+		.index = 0x7a,
+		.val = 0x308a,
+	},
+{
+		.index = 0x7b,
+		.val = 0x0101,
 	},
 	{
 		.index = EV76C570_REG_CTRL_CFG,
 		/* attiva trigger da spi | default | flash durante integrazione | acq continua */
-		.val = 0x02 | 0x04 | 0x40 | 0x08,
+		.val = 0x02 | 0x04 | 0x40 | 0x0c,
+	},
+	{
+		.index = EV76C570_FRAME_PERIOD,
+		/* */
+		.val = 0x4BF,
 	},
 	{
 		.index = EV76C570_REG_MISCEL2,
+		/* default | test pattern still | BW/Color */
+		.val = 0x3a01 | 0x00 | 0x400,
+	},
+	{
+		.index = EV76C570_ANALOG_GAIN,
+		/* analog and digital gain */
+		.val = 0x0400,
+	},
+	{
+		.index = EV76C570_EXPOSURE_INTEGER,
 		/* default | test pattern still */
-		.val = 0x2a01 | 0x20,
+		.val = 0x80,
+	},
+	{
+		.index = EV76C570_ROI2_H,
+		/* default | test pattern still */
+		.val = 0x0,
+	},	
+	{
+		.index = EV76C570_ROI2_W,
+		/* default | test pattern still */
+		.val = 0x0,
+	},
+	{
+		.index = EV76C570_ROI3_H,
+		/* default | test pattern still */
+		.val = 0x0,
+	},	
+	{
+		.index = EV76C570_ROI3_W,
+		/* default | test pattern still */
+		.val = 0x0,
+	},
+	{
+		.index = EV76C570_ROI4_H,
+		/* default | test pattern still */
+		.val = 0x0,
+	},	
+	{
+		.index = EV76C570_ROI4_W,
+		/* default | test pattern still */
+		.val = 0x0,
 	},
 	{
 		.index = -1,
