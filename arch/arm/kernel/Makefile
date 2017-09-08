@@ -90,4 +90,6 @@ obj-y				+= psci.o psci-call.o
 obj-$(CONFIG_SMP)		+= psci_smp.o
 endif
 
+obj-$(CONFIG_DMA_MEMCPY_SYSCALL) += sys-dma-memcpy.o
+
 extra-y := $(head-y) vmlinux.lds
