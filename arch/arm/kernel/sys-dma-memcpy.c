@@ -19,8 +19,9 @@
 #include <linux/wait.h>
 #include <linux/syscalls.h>
 
+struct dma_chan *chan;
+
 struct dma_memcpy_data {
-	struct dma_chan		*chan;
 	dma_cookie_t		cookie;
 	bool			done;
 	wait_queue_head_t	*done_queue;
@@ -58,13 +59,14 @@ SYSCALL_DEFINE3(dma_memcpy,
 		return -EACCES;
 	data.done = 0;
 	data.done_queue = &dma_memcpy_wait;
-	data.chan = dma_request_channel(mask, NULL, NULL);
-	if (!data.chan) {
+	if (!chan)
+		chan = dma_request_channel(mask, NULL, NULL);
+	if (!chan) {
 		pr_err("cannot allocate channel\n");
 		return -ENOMEM;
 	}
-	dev = data.chan->device;
-	tx = dev->device_prep_dma_memcpy(data.chan, dst, src, sz,
+	dev = chan->device;
+	tx = dev->device_prep_dma_memcpy(chan, dst, src, sz,
 					 DMA_CTRL_ACK | DMA_PREP_INTERRUPT);
 	if (!tx) {
 		pr_err("error in prep_dma_memcpy\n");
@@ -79,9 +81,9 @@ SYSCALL_DEFINE3(dma_memcpy,
 		return stat;
 	}
 	pr_debug("%s %d\n", __func__, __LINE__);
-	dma_async_issue_pending(data.chan);
+	dma_async_issue_pending(chan);
 	wait_event_freezable_timeout(dma_memcpy_wait, data.done, 1000);
-	dma_status = dma_async_is_tx_complete(data.chan, cookie, NULL, NULL);
+	dma_status = dma_async_is_tx_complete(chan, cookie, NULL, NULL);
 	if (!data.done) {
 		pr_err("!data->done\n");
 		return -ENODEV;
