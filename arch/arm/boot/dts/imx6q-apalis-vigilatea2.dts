@@ -35,6 +35,23 @@
 		mclk_source = <0>;
 		status = "okay";
 	};
+
+	reserved-memory {
+                #address-cells = <1>;
+                #size-cells = <1>;
+                ranges;
+
+                dma_allocation_test_reserved: rpc@78000000 {
+                        compatible = "shared-dma-pool";
+                        reg = <0x78000000 0x800000>;
+                        no-map;
+                };
+        };
+
+        dma-allocation-test {
+              compatible = "dma-allocation-test";
+              memory-region = <&dma_allocation_test_reserved>;
+        };
 };
 
 /* Disable adv7180, adv7280 and max9526 */
