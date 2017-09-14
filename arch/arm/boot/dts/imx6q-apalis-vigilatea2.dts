@@ -77,7 +77,7 @@
 		     compatible = "e2v,ev76c570";
 		     pinctrl-names = "default";
 		     pinctrl-0 = <&pinctrl_ipu1_csi0>;
-		     spi-max-frequency = <10000000>;
+		     spi-max-frequency = <5000000>;
 		     ipu_id = <0>;
 		     csi_id = <0>;
 		     reset-gpio= <&gpio2 4 GPIO_ACTIVE_LOW>;
@@ -89,7 +89,7 @@
 		     compatible = "e2v,ev76c570";
 		     pinctrl-names = "default";
 		     pinctrl-0 = <&pinctrl_ipu2_csi1>;
-		     spi-max-frequency = <10000000>;
+		     spi-max-frequency = <5000000>;
 		     ipu_id = <1>;
 		     csi_id = <1>;
 		     /* Reset is common, don't reset twice !! */
