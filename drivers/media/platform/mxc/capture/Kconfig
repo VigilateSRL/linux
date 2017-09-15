@@ -15,6 +15,12 @@ config MXC_CAMERA_EV76C570
 	---help---
 	  Say Y in case you have one or more ev76c570 sensors.
 
+config MXC_CAMERA_MT9M031
+        tristate "Aptina mt9m031 parallel camera support"
+	depends on VIDEO_MXC_CAPTURE && MXC_IPU && I2C
+	---help---
+	  Say Y in case you have one or more mt9m031 sensors.
+
 config MXC_CAMERA_OV5640
         tristate "OmniVision ov5640 camera support"
         depends on !VIDEO_MXC_EMMA_CAMERA && I2C

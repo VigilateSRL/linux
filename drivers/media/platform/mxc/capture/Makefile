@@ -9,6 +9,9 @@ endif
 ev76c570_camera-objs := ev76c570.o
 obj-$(CONFIG_MXC_CAMERA_EV76C570) += ev76c570_camera.o
 
+mt9m031_camera-objs := mt9m031.o
+obj-$(CONFIG_MXC_CAMERA_MT9M031) += mt9m031_camera.o
+
 ov5640_camera_int-objs := ov5640.o
 obj-$(CONFIG_MXC_CAMERA_OV5640) += ov5640_camera_int.o
 
