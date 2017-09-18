@@ -62,6 +62,24 @@
 		reg = <0x1e>;
 		status = "okay";
 	};
+
+	mt9m031@10 {
+		compatible = "aptina,mt9m031";
+		reg = <0x10>;
+		reset-gpio= <&gpio2 4 GPIO_ACTIVE_LOW>;
+		ipu_id = <0>;
+		csi_id = <0>;
+		color;
+		status = "okay";
+	};
+
+	mt9m031@18 {
+		compatible = "aptina,mt9m031";
+		reg = <0x18>;
+		ipu_id = <1>;
+		csi_id = <1>;
+		status = "okay";
+	};
 };
 
 
@@ -82,7 +100,7 @@
 		     csi_id = <0>;
 		     reset-gpio= <&gpio2 4 GPIO_ACTIVE_LOW>;
 		     reg = <0>;
-		     status = "okay";
+		     status = "disabled";
 	};
 
 	ev76c570_bw1: ev76c570@1 {
@@ -95,7 +113,7 @@
 		     /* Reset is common, don't reset twice !! */
 		     /* reset-gpio= <&gpio2 4 GPIO_ACTIVE_LOW>; */
 		     reg = <1>;
-		     status = "okay";
+		     status = "disabled";
 	};
 };
 
