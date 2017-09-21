@@ -67,6 +67,8 @@
 		compatible = "aptina,mt9m031";
 		reg = <0x10>;
 		reset-gpio= <&gpio2 4 GPIO_ACTIVE_LOW>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_ipu1_csi0>;
 		ipu_id = <0>;
 		csi_id = <0>;
 		color;
@@ -76,6 +78,8 @@
 	mt9m031@18 {
 		compatible = "aptina,mt9m031";
 		reg = <0x18>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_ipu2_csi1>;
 		ipu_id = <1>;
 		csi_id = <1>;
 		status = "okay";

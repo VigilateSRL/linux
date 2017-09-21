@@ -159,22 +159,255 @@ static const struct mt9m031_reg regs_init_tab[] = {
 	},
 };
 
+#define INPUT_CLK 33  
+#define MT9M031_PLL_M  142
+#define MT9M031_PLL_N  8
+#define MT9M031_PLL_P1 2 
+#define MT9M031_PLL_P2 4
+#define MT9M031_OUT_CLK ((INPUT_CLK * MT9M031_PLL_M) / (MT9M031_PLL_N * MT9M031_PLL_P1 * MT9M031_PLL_P2))
+
+//#define INPUT_CLK 24  
+//#define PLL_M  99				32<= M  <=384
+//#define PLL_N  4				1< = N  <=64		
+//#define PLL_P1 1				1< = P1 <=16
+//#define PLL_P2 8				4< = P2 <=16
+//#define OUT_CLK ((INPUT_CLK 24 * PLL_M 99) / (PLL_N 4 * PLL_P1 1 * PLL_P2 8)) ---> 74.25Mhz
+
+const unsigned short MT9M031_Parallel[]=
+{
+// embedia reset out of parallel 
+0x301A, 0x00D9, 	// RESET_REGISTER
+0x3088, 0x8000, 	// SEQ_CTRL_PORT
+0x3086, 0x3227, 	// SEQ_DATA_PORT
+0x3086, 0x0101, 	// SEQ_DATA_PORT
+0x3086, 0x0F25, 	// SEQ_DATA_PORT
+0x3086, 0x0808, 	// SEQ_DATA_PORT
+0x3086, 0x0227, 	// SEQ_DATA_PORT
+0x3086, 0x0101, 	// SEQ_DATA_PORT
+0x3086, 0x0837, 	// SEQ_DATA_PORT
+0x3086, 0x2700, 	// SEQ_DATA_PORT
+0x3086, 0x0138, 	// SEQ_DATA_PORT
+0x3086, 0x2701, 	// SEQ_DATA_PORT
+0x3086, 0x013A, 	// SEQ_DATA_PORT
+0x3086, 0x2700, 	// SEQ_DATA_PORT
+0x3086, 0x0125, 	// SEQ_DATA_PORT
+0x3086, 0x0020, 	// SEQ_DATA_PORT
+0x3086, 0x3C25, 	// SEQ_DATA_PORT
+0x3086, 0x0040, 	// SEQ_DATA_PORT
+0x3086, 0x3427, 	// SEQ_DATA_PORT
+0x3086, 0x003F, 	// SEQ_DATA_PORT
+0x3086, 0x2500, 	// SEQ_DATA_PORT
+0x3086, 0x2037, 	// SEQ_DATA_PORT
+0x3086, 0x2540, 	// SEQ_DATA_PORT
+0x3086, 0x4036, 	// SEQ_DATA_PORT
+0x3086, 0x2500, 	// SEQ_DATA_PORT
+0x3086, 0x4031, 	// SEQ_DATA_PORT
+0x3086, 0x2540, 	// SEQ_DATA_PORT
+0x3086, 0x403D, 	// SEQ_DATA_PORT
+0x3086, 0x6425, 	// SEQ_DATA_PORT
+0x3086, 0x2020, 	// SEQ_DATA_PORT
+0x3086, 0x3D64, 	// SEQ_DATA_PORT
+0x3086, 0x2510, 	// SEQ_DATA_PORT
+0x3086, 0x1037, 	// SEQ_DATA_PORT
+0x3086, 0x2520, 	// SEQ_DATA_PORT
+0x3086, 0x2010, 	// SEQ_DATA_PORT
+0x3086, 0x2510, 	// SEQ_DATA_PORT
+0x3086, 0x100F, 	// SEQ_DATA_PORT
+0x3086, 0x2708, 	// SEQ_DATA_PORT
+0x3086, 0x0802, 	// SEQ_DATA_PORT
+0x3086, 0x2540, 	// SEQ_DATA_PORT
+0x3086, 0x402D, 	// SEQ_DATA_PORT
+0x3086, 0x2608, 	// SEQ_DATA_PORT
+0x3086, 0x280D, 	// SEQ_DATA_PORT
+0x3086, 0x1709, 	// SEQ_DATA_PORT
+0x3086, 0x2600, 	// SEQ_DATA_PORT
+0x3086, 0x2805, 	// SEQ_DATA_PORT
+0x3086, 0x26A7, 	// SEQ_DATA_PORT
+0x3086, 0x2807, 	// SEQ_DATA_PORT
+0x3086, 0x2580, 	// SEQ_DATA_PORT
+0x3086, 0x8029, 	// SEQ_DATA_PORT
+0x3086, 0x1705, 	// SEQ_DATA_PORT
+0x3086, 0x2500, 	// SEQ_DATA_PORT
+0x3086, 0x4027, 	// SEQ_DATA_PORT
+0x3086, 0x2222, 	// SEQ_DATA_PORT
+0x3086, 0x1616, 	// SEQ_DATA_PORT
+0x3086, 0x2726, 	// SEQ_DATA_PORT
+0x3086, 0x2617, 	// SEQ_DATA_PORT
+0x3086, 0x3626, 	// SEQ_DATA_PORT
+0x3086, 0xA617, 	// SEQ_DATA_PORT
+0x3086, 0x0326, 	// SEQ_DATA_PORT
+0x3086, 0xA417, 	// SEQ_DATA_PORT
+0x3086, 0x1F28, 	// SEQ_DATA_PORT
+0x3086, 0x0526, 	// SEQ_DATA_PORT
+0x3086, 0x2028, 	// SEQ_DATA_PORT
+0x3086, 0x0425, 	// SEQ_DATA_PORT
+0x3086, 0x2020, 	// SEQ_DATA_PORT
+0x3086, 0x2700, 	// SEQ_DATA_PORT
+0x3086, 0x2625, 	// SEQ_DATA_PORT
+0x3086, 0x0000, 	// SEQ_DATA_PORT
+0x3086, 0x171E, 	// SEQ_DATA_PORT
+0x3086, 0x2500, 	// SEQ_DATA_PORT
+0x3086, 0x0425, 	// SEQ_DATA_PORT
+0x3086, 0x0020, 	// SEQ_DATA_PORT
+0x3086, 0x2117, 	// SEQ_DATA_PORT
+0x3086, 0x121B, 	// SEQ_DATA_PORT
+0x3086, 0x1703, 	// SEQ_DATA_PORT
+0x3086, 0x2726, 	// SEQ_DATA_PORT
+0x3086, 0x2617, 	// SEQ_DATA_PORT
+0x3086, 0x2828, 	// SEQ_DATA_PORT
+0x3086, 0x0517, 	// SEQ_DATA_PORT
+0x3086, 0x1A26, 	// SEQ_DATA_PORT
+0x3086, 0x6017, 	// SEQ_DATA_PORT
+0x3086, 0xAE25, 	// SEQ_DATA_PORT
+0x3086, 0x0080, 	// SEQ_DATA_PORT
+0x3086, 0x2700, 	// SEQ_DATA_PORT
+0x3086, 0x2626, 	// SEQ_DATA_PORT
+0x3086, 0x1828, 	// SEQ_DATA_PORT
+0x3086, 0x002E, 	// SEQ_DATA_PORT
+0x3086, 0x2A28, 	// SEQ_DATA_PORT
+0x3086, 0x081E, 	// SEQ_DATA_PORT
+0x3086, 0x4127, 	// SEQ_DATA_PORT
+0x3086, 0x1010, 	// SEQ_DATA_PORT
+0x3086, 0x0214, 	// SEQ_DATA_PORT
+0x3086, 0x6060, 	// SEQ_DATA_PORT
+0x3086, 0x0A14, 	// SEQ_DATA_PORT
+0x3086, 0x6060, 	// SEQ_DATA_PORT
+0x3086, 0x0B14, 	// SEQ_DATA_PORT
+0x3086, 0x6060, 	// SEQ_DATA_PORT
+0x3086, 0x0C14, 	// SEQ_DATA_PORT
+0x3086, 0x6060, 	// SEQ_DATA_PORT
+0x3086, 0x0D14, 	// SEQ_DATA_PORT
+0x3086, 0x6060, 	// SEQ_DATA_PORT
+0x3086, 0x0217, 	// SEQ_DATA_PORT
+0x3086, 0x3C14, 	// SEQ_DATA_PORT
+0x3086, 0x0060, 	// SEQ_DATA_PORT
+0x3086, 0x0A14, 	// SEQ_DATA_PORT
+0x3086, 0x0060, 	// SEQ_DATA_PORT
+0x3086, 0x0B14, 	// SEQ_DATA_PORT
+0x3086, 0x0060, 	// SEQ_DATA_PORT
+0x3086, 0x0C14, 	// SEQ_DATA_PORT
+0x3086, 0x0060, 	// SEQ_DATA_PORT
+0x3086, 0x0D14, 	// SEQ_DATA_PORT
+0x3086, 0x0060, 	// SEQ_DATA_PORT
+0x3086, 0x0811, 	// SEQ_DATA_PORT
+0x3086, 0x2500, 	// SEQ_DATA_PORT
+0x3086, 0x1027, 	// SEQ_DATA_PORT
+0x3086, 0x0010, 	// SEQ_DATA_PORT
+0x3086, 0x2F6F, 	// SEQ_DATA_PORT
+0x3086, 0x0F3E, 	// SEQ_DATA_PORT
+0x3086, 0x2500, 	// SEQ_DATA_PORT
+0x3086, 0x0827, 	// SEQ_DATA_PORT
+0x3086, 0x0008, 	// SEQ_DATA_PORT
+0x3086, 0x3066, 	// SEQ_DATA_PORT
+0x3086, 0x3225, 	// SEQ_DATA_PORT
+0x3086, 0x0008, 	// SEQ_DATA_PORT
+0x3086, 0x2700, 	// SEQ_DATA_PORT
+0x3086, 0x0830, 	// SEQ_DATA_PORT
+0x3086, 0x6631, 	// SEQ_DATA_PORT
+0x3086, 0x3D64, 	// SEQ_DATA_PORT
+0x3086, 0x2508, 	// SEQ_DATA_PORT
+0x3086, 0x083D, 	// SEQ_DATA_PORT
+0x3086, 0xFF3D, 	// SEQ_DATA_PORT
+0x3086, 0x2A27, 	// SEQ_DATA_PORT
+0x3086, 0x083F, 	// SEQ_DATA_PORT
+0x3086, 0x2C00, 	// SEQ_DATA_PORT
+0x301A, 0x00D8, 	// RESET_REGISTER
+
+0x30D4, 0x0007, 	// COLUMN_CORRECTION
+0x301A, 0x00DC, 	// RESET_REGISTER
+0x301A, 0x0000, 	// RESET_REGISTER
+0x30D4, 0x8000, 	// COLUMN_CORRECTION
+0x301A, 0x0004, 	// RESET_REGISTER
+0x307A, 0x0000, 	// TEST_RAW_MODE
+0x30EA, 0x0C00, 	// RESERVED_MFR_30EA
+0x3044, 0x0404, 	// DARK_CONTROL
+0x301E, 0x012C, 	// DATA_PEDESTAL
+0x3180, 0x8000, 	// RESERVED_MFR_3180
+0x30D4, 0xE007, 	// COLUMN_CORRECTION
+0x3014, 0x0380, 	// FINE_INTEGRATION_TIME
+0x3ED6, 0x00FD, 	// RESERVED_MFR_3ED6
+0x3ED8, 0x0FFF, 	// RESERVED_MFR_3ED8
+0x3EDA, 0x0003, 	// RESERVED_MFR_3EDA
+0x3EDC, 0xF87A, 	// RESERVED_MFR_3EDC
+0x3EDE, 0xE075, 	// RESERVED_MFR_3EDE
+0x3EE0, 0x077C, 	// RESERVED_MFR_3EE0
+0x3EE2, 0xA4EB, 	// RESERVED_MFR_3EE2
+0x3EE4, 0xD208, 	// RESERVED_MFR_3EE4
+/*
+0x302C, 0x0001, 	// VT_SYS_CLK_DIV
+0x302A, 0x0008, 	// VT_PIX_CLK_DIV
+0x302E, 0x0002, 	// PRE_PLL_CLK_DIV
+0x3030, 0x002C, 	// PLL_MULTIPLIER
+*/
+0x302C, MT9M031_PLL_P1, // VT_SYS_CLK_DIV
+0x302A, MT9M031_PLL_P2, // VT_PIX_CLK_DIV
+0x302E, MT9M031_PLL_N, 	// PRE_PLL_CLK_DIV
+0x3030, MT9M031_PLL_M, 	// PLL_MULTIPLIER
+
+0x30B0, 0x0000, 	// DIGITAL_TEST
+
+0x3070, 0x0000,		// TEST PATTERN
+
+0x3100, 0x0000,		// ANALOG GAIN AND AEG
+
+// active pixel w= 1280 h=960 
+// streched syncs w=1920 h=1080
+0x3002, 0x0004, 	// Y_ADDR_START HD (4)     						
+0x3004, 0x0002, 	// X_ADDR_START_HD (2)
+0x3006, 0x03c3, 	// Y_ADDR_END HD  (963)
+0x3008, 0x0501, 	// X_ADDR_END_HD (1281)
+0x300A, 0x03de, 	// FRAME_LENGTH_LINES
+0x300C, 0x0672, 	// LINE_LENGTH_PCK 
+0x3012, 0x0ff, 		// COARSE_INTEGRATION_TIME_HD
+
+0x30A2, 0x0001, 	// X_ODD_INC
+0x30A6, 0x0001, 	// Y_ODD_INC
+0x3040, 0xc000, 	// READ_MODE
+//0x3032, 0x0020, 	// DIGITAL_BINNING
+0x3032, 0x0000, 	// DIGITAL_BINNING
+0x3028, 0x0010, 	// ROW_SPEED
+0x301A, 0x10DC 		// RESET_REGISTER
+};
+
 static int ioctl_dev_init(struct v4l2_int_device *s)
 {
 	struct mt9m031_priv *data = to_priv(s->priv);
-	const struct mt9m031_reg *ptr;
+	/*const struct mt9m031_reg *ptr;
 
 	dev_dbg(&data->i2c->dev, "%s", __func__);
 	for (ptr = regs_init_tab; ptr->index != -1; ptr++) {
 		unsigned int v;
 
 		mt9m031_write_reg(data, ptr->index, ptr->val);
-		dev_dbg(&data->i2c->dev, "%s: writing 0x%04x to 0x%04x\n",
-			__func__, ptr->val, ptr->index);
+		dev_dbg(&data->i2c->dev, "%s: writing 0x%04x to 0x%04x\n", __func__, ptr->val, ptr->index);
 		mt9m031_read_reg(data, ptr->index, &v);
-		dev_dbg(&data->i2c->dev, "%s: read 0x%04x from 0x%04x\n",
-			__func__, v, ptr->index);
+		dev_dbg(&data->i2c->dev, "%s: read 0x%04x from 0x%04x\n", __func__, v, ptr->index);
+	}*/
+
+    	int status = 0;
+ 	int j;
+
+	for(j=0; j < sizeof(MT9M031_Parallel)/sizeof(unsigned short); j=j+2)
+	{
+		unsigned int v;
+
+		mt9m031_write_reg(data, MT9M031_Parallel[j], MT9M031_Parallel[j+1]);
+		dev_dbg(&data->i2c->dev, "%s: writing 0x%04x to 0x%04x\n", __func__, MT9M031_Parallel[j+1], MT9M031_Parallel[j]);
+		mt9m031_read_reg(data, MT9M031_Parallel[j], &v);
+		dev_dbg(&data->i2c->dev, "%s: read 0x%04x from 0x%04x\n", __func__, v, MT9M031_Parallel[j]);
+	
+	   	/*status = mt9m031_write(sd, MT9M031_Parallel[j], MT9M031_Parallel[j+1]);
+	   	if(status != 0)
+		{
+		  v4l2_err(sd,"I2C write Error,index:%d\n",j);
+		   return status;
+		}*/
+		if(MT9M031_Parallel[j] == 0x301A )	
+		   msleep_interruptible(200);
+		else
+		   msleep_interruptible(1);	
 	}
+
 	return 0;
 }
 
@@ -454,6 +687,8 @@ static int mt9m031_v4l2_write_reg(struct v4l2_int_device *s, u16 reg, u16 val)
 	struct mt9m031_priv *data = to_priv(s->priv);
 	unsigned r = reg, v = val;
 
+	pr_debug("%s reg = %u, val = %u\n", __func__, r, v);
+
 	return mt9m031_write_reg(data, r, v);
 }
 
@@ -524,23 +759,21 @@ static int mt9m031_probe(struct i2c_client *i2c, const struct i2c_device_id *id)
 	}
 	if (gpio_is_valid(plat->reset_gpio)) {
 		ret = mt9m031_reset(i2c);
-		if (ret < 0)
-			return ret;
+		msleep_interruptible(7);
+		if (ret < 0)return ret;
 	}
 	data->sen.streamcap.timeperframe.denominator = 50;
 	data->sen.streamcap.timeperframe.numerator = 1;
-	data->sen.pix.width = 1600;
-	data->sen.pix.height = 1200;
+	data->sen.pix.width = 1280;
+	data->sen.pix.height = 960;
 	data->sen.pix.pixelformat = V4L2_PIX_FMT_GREY;
-	ret = of_property_read_u32(i2c->dev.of_node, "ipu_id",
-				   &data->sen.ipu_id);
+	ret = of_property_read_u32(i2c->dev.of_node, "ipu_id", &data->sen.ipu_id);
 	if (ret) {
 		dev_err(&i2c->dev, "ipu_id missing or invalid\n");
 		return ret;
 	}
 
-	ret = of_property_read_u32(i2c->dev.of_node, "csi_id",
-				   &data->sen.csi);
+	ret = of_property_read_u32(i2c->dev.of_node, "csi_id", &data->sen.csi);
 	if (ret) {
 		dev_err(&i2c->dev, "csi_id missing or invalid\n");
 		return ret;
