@@ -179,3 +179,9 @@
 		};
 	};
 };
+
+&usdhc1 {
+	status = "okay";
+	pinctrl-0 = <&pinctrl_usdhc1_4bit>;
+	broken-cd;
+};
