@@ -720,16 +720,31 @@ static int ev76c570_v4l2_write_reg(struct v4l2_int_device *s, u16 reg, u16 val)
 	return ev76c570_write_reg(data, r, v);
 }
 
+#define MAX_READ_ATTEMPTS 10
+
 static int ev76c570_v4l2_read_reg(struct v4l2_int_device *s, u16 reg, u16 *val)
 {
 	struct ev76c570_priv *data = to_priv(s->priv);
-	unsigned r = reg, v;
-	int ret;
+	unsigned r = reg, v, prev;
+	int ret, i;
 
-	ret = ev76c570_read_reg(data, r, &v);
-	if (ret < 0)
-		return ret;
+	for (i = 0; i < MAX_READ_ATTEMPTS; i++) {
+		ret = ev76c570_read_reg(data, r, &v);
+		if (ret < 0)
+			return ret;
+		if (!i)
+			prev = v;
+		else {
+			if (v == prev)
+				break;
+		}
+	}
+	if (i == MAX_READ_ATTEMPTS) {
+		printk(KERN_ERR "%s: max nattempts reached\n", __func__);
+		return -1;
+	}
 	*val = v;
+	pr_debug("%s: attempts = %d\n", __func__, i);
 	return ret;
 }
 
