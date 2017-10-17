@@ -365,7 +365,7 @@ static const struct ev76c570_reg regs_init_tab[] = {
 	{
 		.index = EV76C570_REG_CTRL_CFG,
 		/* attiva trigger da spi | default | flash durante integrazione | acq continua */
-		.val = 0x02 | 0x04 | 0x40 | 0x0c,
+		.val = 0x02 | 0x04 | 0x00 | 0x0c,
 	},
 	{
 		.index = EV76C570_FRAME_PERIOD,
