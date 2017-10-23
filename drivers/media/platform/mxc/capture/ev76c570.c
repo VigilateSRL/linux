@@ -53,6 +53,8 @@
 #define EV76C570_STATUS 0x3e
 #define EV76C570_CHIP_ID 0x7f
 
+#define EV76C570_SENSOR_CHIP_ID 0x0900
+
 struct ev76c570_priv {
 	struct sensor_data sen;
 	struct regmap *map8;
@@ -836,6 +838,10 @@ static int ev76c570_probe(struct spi_device *spi)
 	if (ret < 0) {
 		dev_err(&spi->dev, "error reading chip id\n");
 		return ret;
+	}
+	if (chip_id != EV76C570_SENSOR_CHIP_ID) {
+		dev_err(&spi->dev, "unexpected chip id (0x%04x\n)\n", chip_id);
+		return -ENODEV;
 	}
 	dev_info(&spi->dev, "detected chip id 0x%04x\n", chip_id);
 	vd = devm_kzalloc(&spi->dev, sizeof(*vd), GFP_KERNEL);
